@@ -100,7 +100,7 @@ function E = evaluation(P, t, time_windows, num_sites, dispatch_times, work_time
         total_penalty = total_penalty_time * penalty_rate_per_min;
 
         % 計算適應度值（假設目標是最小化總懲罰值）
-        H(i) = -total_penalty;
+        H(i) = total_penalty;
     end
 
     E = H;  % 返回適應度值
