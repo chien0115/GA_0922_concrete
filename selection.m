@@ -1,19 +1,16 @@
-function [YY1, YY2, best_dispatch_times] = selection(P, E, t, n, dispatch_times)
+function [YY1, YY2, best_dispatch_times] = selection(P, E, s, dispatch_times)
 
 
     % P = Population, F = fitness value, p = population size
 
-    E = abs(E); % 確保 fitness 為正值
     [x, y] = size(P); % 目前經歷過 crossover、mutation 的 P
 
-    % 確保不會選擇超過交配與變異產生的數量
-    num_to_select = round(min(x/2, n/2));  % 確保選擇不超過剩餘染色體數量
 
-    YY1 = zeros(num_to_select, y); % Store selected chromosomes
-    YY2 = zeros(num_to_select, 1); % Store fitness values
-    best_dispatch_times = zeros(num_to_select, size(dispatch_times, 2)); % Store dispatch times
+    YY1 = zeros(s, y); %儲存良好的染色體
+    YY2 = zeros(s, 1); % 良好的適應值
+    best_dispatch_times = zeros(s, size(dispatch_times, 2)); % Store dispatch times
 
-    e = round(num_to_select / 2); % Number of elite chromosomes to select
+    e = round(s / 2); % Number of elite chromosomes to select
 
     for i = 1:e % Select the top e chromosomes with the highest fitness values
         c1 = find(E == min(E)); % Find index of the best fitness value 找到適應值最好的位置 因儲存適應度的陣列是一維
@@ -48,7 +45,7 @@ function [YY1, YY2, best_dispatch_times] = selection(P, E, t, n, dispatch_times)
     d1 = 1;
     d2 = e; % Start from where we left off
 
-    while d2 < num_to_select
+    while d2 < s
         if N < CP(d1)
             % Select chromosome based on cumulative probability
             YY1(d2 + 1, :) = P(d1, :);
