@@ -112,18 +112,15 @@ for i = 1:tg
 
 
     % 突變操作
-    if rand_mutation <= mutationRate
-        for i = 1:size(C, 1)
-
+    for i = 1:size(C, 1)
+        if rand_mutation <= mutationRate
             [M_temp, dispatch_times_mutation_temp] = mutation(C(i, :), t, dispatch_times_cross(i, :));
-
-
-            M = [M; M_temp];
-            dispatch_times_mutation = [dispatch_times_mutation; dispatch_times_mutation_temp];
+            M = [M; M_temp];  % 添加突變後的染色體
+            dispatch_times_mutation = [dispatch_times_mutation; dispatch_times_mutation_temp];  % 添加突變後的派遣時間
+        else
+            M = [M; C(i, :)];  % 只保留未突變的染色體
+            dispatch_times_mutation = [dispatch_times_mutation; dispatch_times_cross(i, :)];  % 只保留未突變的派遣時間
         end
-    else
-        M = [M; C];
-        dispatch_times_mutation = [dispatch_times_mutation; dispatch_times_cross]; % 保留交配后的派遣时间
     end
 
 
@@ -141,9 +138,9 @@ for i = 1:tg
     K(i, 2) = min(E); % 最佳適應度
 
     % 畫圖
-    plot(i, K(i, 1), 'b.');  % 畫出第i代的平均適應度
+    plot(K(i, 1), 'b.');  % 畫出第i代的平均適應度
     hold on
-    plot(i, K(i, 2), 'r.');  % 畫出第i代的最佳適應度
+    plot(K(i, 2), 'r.');  % 畫出第i代的最佳適應度
     drawnow
 end
 
