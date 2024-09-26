@@ -7,7 +7,7 @@ clc
 n = 200; % 初始種群大小
 c = 50; % 需要進行交叉的染色體對數
 m = 20; % 需要進行突變的染色體數
-tg = 100; % 總代數
+tg = 500; % 總代數
 num_sites = 5; % 工地
 % num_sites_with_factory = num_sites + 1; % 包括工廠的總工地數
 t = 1; % 卡車數
@@ -18,6 +18,7 @@ mutationRate = 0.8; % 突變率
 
 
 
+%480->早上8點
 time_windows = [480, 1020; 490, 1020; 485, 1020; 495, 1020; 490, 1020;0, 1440]; % 每個工地的時間窗(每個工地每天開始、結束時間),0-1440代表工廠全天開放
 % route = [1, 2, 3, 4, 5]; % 染色體示例：工廠到工地的路徑
 
@@ -52,6 +53,8 @@ ylabel('Objective Function Value')
 hold on
 
 
+
+
 [P,dispatch_times] = population(n, demand_trips, t, time_windows); % 初始化種群 P只包含派出順序 OK
 for i = 1:tg
     % 初始化
@@ -61,6 +64,7 @@ for i = 1:tg
 
     % 評估操作 每個染色體的適應值 OK
     E = evaluation(P, t, time_windows, num_sites, dispatch_times, work_time, time, max_interrupt_time, truck_max_interrupt_time, demand_trips, penalty_rate_per_min); % 評估族群 P 中每個染色體的適應度
+
 
     % 選擇最好的染色體 目前設定選s個 OK
     [P, S, best_dispatch_times] = selection(P, E, s, dispatch_times);
@@ -77,8 +81,9 @@ for i = 1:tg
     C = []; % 初始化 C 為空矩陣
     M = []; % 初始化 M 為空矩陣
 
+    %把好的作交配、變異
     % 交配操作
-    for i = 1:(n-s)
+    for j = 1:(n-s)
         if cr_num < n-s % 扣除前面selection先選的
             rand_crossover = rand();
             if rand_crossover <= crossoverRate
@@ -95,12 +100,12 @@ for i = 1:tg
                 cr_num = cr_num + 2; % 更新 cr_num
             else
                 % 保留兩個原染色體
-                C = [C; P(2*i-1, :)]; % 保留第 2*i-1 個染色體
-                dispatch_times_cross = [dispatch_times_cross; dispatch_times(2*i-1, :)]; % 保留第一個染色體及派遣時間
+                C = [C; P(2*j-1, :)]; % 保留第 2*i-1 個染色體
+                dispatch_times_cross = [dispatch_times_cross; dispatch_times(2*j-1, :)]; % 保留第一個染色體及派遣時間
 
                 if 2*i <= size(P,1) % 確保不超出數組長度，確保 i+1 對應的染色體存在
-                    C = [C; P(2*i, :)]; % 保留第 2*i 個染色體
-                    dispatch_times_cross = [dispatch_times_cross; dispatch_times(2*i, :)]; % 保留第二個染色體及派遣時間
+                    C = [C; P(2*j,:)]; % 保留第 2*i 個染色體
+                    dispatch_times_cross = [dispatch_times_cross; dispatch_times(2*j, :)]; % 保留第二個染色體及派遣時間
                 end
 
                 cr_num = cr_num + 2; % 因為每次保留兩個染色體，所以增加 2
@@ -112,19 +117,19 @@ for i = 1:tg
 
 
     % 突變操作
-    for i = 1:size(C, 1)
+    for k = 1:size(C, 1)
         if rand_mutation <= mutationRate
-            [M_temp, dispatch_times_mutation_temp] = mutation(C(i, :), t, dispatch_times_cross(i, :));
+            [M_temp, dispatch_times_mutation_temp] = mutation(C(k, :), t, dispatch_times_cross(k, :));
             M = [M; M_temp];  % 添加突變後的染色體
             dispatch_times_mutation = [dispatch_times_mutation; dispatch_times_mutation_temp];  % 添加突變後的派遣時間
         else
-            M = [M; C(i, :)];  % 只保留未突變的染色體
-            dispatch_times_mutation = [dispatch_times_mutation; dispatch_times_cross(i, :)];  % 只保留未突變的派遣時間
+            M = [M; C(k, :)];  % 只保留未突變的染色體
+            dispatch_times_mutation = [dispatch_times_mutation; dispatch_times_cross(k, :)];  % 只保留未突變的派遣時間
         end
     end
 
 
-    % 統整
+    % 統整(selection、crossover、mutation)
     P=[P;M];
     dispatch_times=[best_dispatch_times;dispatch_times_mutation];
 
@@ -138,9 +143,9 @@ for i = 1:tg
     K(i, 2) = min(E); % 最佳適應度
 
     % 畫圖
-    plot(K(i, 1), 'b.');  % 畫出第i代的平均適應度
+    plot(i,K(i, 1), 'b.');  % 畫出第i代的平均適應度
     hold on
-    plot(K(i, 2), 'r.');  % 畫出第i代的最佳適應度
+    plot(i,K(i, 2), 'r.');  % 畫出第i代的最佳適應度
     drawnow
 end
 
