@@ -75,6 +75,7 @@ function E = evaluation(P, t, time_windows, num_sites, dispatch_times, work_time
                     previous_finish_time = finish_time(site_id, k-1);
                     interruption_time = actual_dispatch_time + travel_to_site - previous_finish_time;
 
+                    %超過容許中斷時間
                     if interruption_time > max_interrupt_time(site_id)
                         penalty_side_time(site_id) = penalty_side_time(site_id) + (interruption_time - max_interrupt_time(site_id));
                     end
@@ -93,11 +94,13 @@ function E = evaluation(P, t, time_windows, num_sites, dispatch_times, work_time
             end
         end
 
-        % 計算總懲罰時間
-        total_penalty_time = sum(penalty_side_time) + penalty_truck_time;
+        % 讓工地等
+        total_penalty_time_side =sum(penalty_truck_time);
+        %讓卡車等
+        total_penalty_time_truck=sum(penalty_side_time);
 
         % 計算總懲罰值（基於每小時的懲罰率）
-        total_penalty = total_penalty_time * penalty_rate_per_min;
+        total_penalty = total_penalty_time_side * penalty_rate_per_min+total_penalty_time_truck;
 
         % 計算適應度值（假設目標是最小化總懲罰值）
         H(i) = total_penalty;
