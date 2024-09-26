@@ -18,9 +18,10 @@ for i = 1:n
     
     %生成工廠時間窗內每個卡車的派遣時間
     for j = 1:num_trucks
-        % Generate a random dispatch time for each truck within the time window of the site
+        % 隨機產生派遣的工地
         site_idx = randi(num_sites); % Randomly select a site for the truck
-        dispatch_time(j) = randi([time_windows(site_idx, 1), time_windows(site_idx, 2)]); % Random time within the selected site’s time window
+        %隨機產生在派遣時間窗內的時間
+        dispatch_time(j) = randi([time_windows(site_idx, 1), time_windows(site_idx, 2)]); 
     end
     dispatch_times(i, :) = dispatch_time'; % 儲存派遣時間
 
