@@ -15,7 +15,7 @@ function E = evaluation(P, t, time_windows, num_sites, dispatch_times, work_time
         % 取出派遣時間部分
         dispatch_times_for_chromosome(i,:) = dispatch_times(i,:);
         
-        % 取出派遣順序部分
+        % 取出派遣順序部分(y1->工地派遣順序)
         dispatch_order_for_chromosome = P(i, 1:num_dispatch_order);
 
         % 初始化工地的派遣信息
